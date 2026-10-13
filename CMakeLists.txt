@@ -66,6 +66,9 @@ target_include_directories(armyoftwo40threcomp
     PRIVATE "${REXSDK_INCLUDE_DIR}"
 )
 
+target_compile_definitions(armyoftwo40threcomp
+    PRIVATE SPDLOG_FMT_EXTERNAL
+)
 
 if(COMMAND rexglue_setup_target)
     rexglue_setup_target(armyoftwo40threcomp GPU_PLUGINS xenos)
