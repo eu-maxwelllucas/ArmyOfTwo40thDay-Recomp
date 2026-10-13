@@ -1,0 +1,71 @@
+
+name: Windows Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Build Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install LLVM
+        shell: pwsh
+        run: |
+          choco install llvm --yes --no-progress
+          "$env:ProgramFiles\LLVM\bin" |
+            Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Verify build tools
+        shell: pwsh
+        run: |
+          cmake --version
+          ninja --version
+          clang++ --version
+
+      - name: Fix SDK argument quoting
+        shell: pwsh
+        run: |
+          $file = "CMakeLists.txt"
+          $content = Get-Content $file -Raw
+          $content = $content.Replace(
+            '"-DREXSDK_VERSION=''${REXSDK_VERSION}''"',
+            '"-DREXSDK_VERSION=${REXSDK_VERSION}"'
+          )
+          Set-Content -Path $file -Value $content -NoNewline
+
+      - name: Configure Release build
+        run: cmake --preset win-amd64-release
+
+      - name: Compile
+        run: cmake --build --preset win-amd64-release --parallel 2
+
+      - name: Verify executable
+        shell: pwsh
+        run: |
+          $exe = "out/build/win-amd64-release/armyoftwo40threcomp.exe"
+          if (!(Test-Path $exe)) {
+            throw "Executable not found: $exe"
+          }
+          Write-Host "Build created successfully: $exe"
+
+      - name: Upload Windows build
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArmyOfTwo40thDay-Windows-x64
+          path: out/build/win-amd64-release/
+          if-no-files-found: error
+          retention-days: 14
