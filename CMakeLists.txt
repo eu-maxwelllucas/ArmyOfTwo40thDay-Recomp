@@ -51,6 +51,22 @@ else()
     add_executable(armyoftwo40threcomp ${ARMYOFTWO40THRECOMP_SOURCES})
 endif()
 
+
+set(REXSDK_INCLUDE_DIR
+    "${CMAKE_CURRENT_SOURCE_DIR}/rexglue/${REXSDK_PLATFORM}/include"
+)
+
+if(NOT EXISTS "${REXSDK_INCLUDE_DIR}/rex/cvar.h")
+    message(FATAL_ERROR
+        "Cabecalho rex/cvar.h nao encontrado em: ${REXSDK_INCLUDE_DIR}"
+    )
+endif()
+
+target_include_directories(armyoftwo40threcomp
+    PRIVATE "${REXSDK_INCLUDE_DIR}"
+)
+
+
 if(COMMAND rexglue_setup_target)
     rexglue_setup_target(armyoftwo40threcomp GPU_PLUGINS xenos)
 endif()
