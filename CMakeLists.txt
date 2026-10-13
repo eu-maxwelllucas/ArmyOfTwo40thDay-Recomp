@@ -27,7 +27,7 @@ endif()
 
 execute_process(
     COMMAND ${CMAKE_COMMAND}
-            "-DREXSDK_VERSION='${REXSDK_VERSION}'"
+            "-DREXSDK_VERSION=${REXSDK_VERSION}"
             "-DREXSDK_PLATFORM=${REXSDK_PLATFORM}"
             -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/fetch-rexglue-sdk.cmake")
 
