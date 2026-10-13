@@ -49,6 +49,24 @@ jobs:
       - name: Configure Release build
         run: cmake --preset win-amd64-release
 
+      - name: Diagnose spdlog headers
+        shell: pwsh
+        run: |
+          $include = "rexglue/win-amd64/include"
+
+          Write-Host "=== Arquivos de format.h ==="
+          Get-ChildItem $include -Filter "format.h" -Recurse |
+            Select-Object -ExpandProperty FullName
+
+          Write-Host "=== Pasta spdlog/fmt ==="
+          $fmtDir = Join-Path $include "spdlog/fmt"
+          if (Test-Path $fmtDir) {
+            Get-ChildItem $fmtDir -Recurse |
+              Select-Object -ExpandProperty FullName
+          } else {
+            Write-Host "Pasta spdlog/fmt não encontrada."
+          }
+
       - name: Compile
         run: cmake --build --preset win-amd64-release --parallel 2
 
