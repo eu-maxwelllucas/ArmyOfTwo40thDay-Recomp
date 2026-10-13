@@ -28,16 +28,26 @@ class Armyoftwo40thApp : public rex::ReXApp
 public:
   using rex::ReXApp::ReXApp;
 
+  
   static std::unique_ptr<rex::ui::WindowedApp> Create(
       rex::ui::WindowedAppContext &ctx)
   {
-#ifdef PPCImageConfig
-    return std::unique_ptr<Armyoftwo40thApp>(new Armyoftwo40thApp(ctx, "armyoftwo40threcomp",
-                                                                 PPCImageConfig));
+#if __has_include("generated/default/armyoftwo40threcomp_config.h")
+    return std::unique_ptr<Armyoftwo40thApp>(
+        new Armyoftwo40thApp(ctx, "armyoftwo40threcomp",
+                             PPCImageConfig));
+#elif __has_include("generated/default/armyoftworecomp_config.h")
+    return std::unique_ptr<Armyoftwo40thApp>(
+        new Armyoftwo40thApp(ctx, "armyoftwo40threcomp",
+                             PPCImageConfig));
 #else
-    return std::unique_ptr<Armyoftwo40thApp>(new Armyoftwo40thApp(ctx, "armyoftwo40threcomp"));
+    REXLOG_ERROR(
+        "Generated PPC image configuration is missing. "
+        "Run the ReXGlue codegen target first.");
+    return nullptr;
 #endif
   }
+
 
   void OnPreSetup(rex::RuntimeConfig &config) override
   {
