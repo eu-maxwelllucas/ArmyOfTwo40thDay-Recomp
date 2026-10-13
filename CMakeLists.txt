@@ -29,7 +29,11 @@ execute_process(
     COMMAND ${CMAKE_COMMAND}
             "-DREXSDK_VERSION=${REXSDK_VERSION}"
             "-DREXSDK_PLATFORM=${REXSDK_PLATFORM}"
-            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/fetch-rexglue-sdk.cmake")
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/fetch-rexglue-sdk.cmake"
+    RESULT_VARIABLE REXSDK_FETCH_RESULT)
+if(NOT REXSDK_FETCH_RESULT EQUAL 0)
+    message(FATAL_ERROR "Falha ao baixar ou extrair o ReXGlue SDK.")
+endif()
 
 set(REXSDK_VERSION "")
 
